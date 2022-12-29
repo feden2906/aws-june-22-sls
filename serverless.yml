@@ -1,0 +1,53 @@
+org: feden
+app: aws-june-sls
+service: aws-june-sls
+frameworkVersion: '3'
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: us-east-1
+  timeout: 15
+  stage: ${opt:stage, self:custom.default}
+  versionFunctions: false
+
+functions:
+  getTodos:
+    handler: src/get-todos.handler
+    events:
+      - httpApi:
+          path: /todos
+          method: get
+  createTodo:
+    handler: src/create-todo.handler
+    events:
+      - httpApi:
+          path: /todos
+          method: post
+  getTodo:
+    handler: src/get-todo.handler
+    events:
+      - httpApi:
+          path: /todos/{id}
+          method: get
+  updateTodo:
+    handler: src/update-todo.handler
+    events:
+      - httpApi:
+          path: /todos/{id}
+          method: put
+  removeTodo:
+    handler: src/remove-todo.handler
+    events:
+      - httpApi:
+          path: /todos/{id}
+          method: delete
+
+custom:
+  dotenv:
+    path: environments/${opt:stage, self:custom.default}.env
+  default: 'local'
